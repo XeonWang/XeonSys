@@ -1,0 +1,4 @@
+00007C00  B40E              mov ah,0xe
+00007C02  B058              mov al,0x58
+00007C04  CD0A              int 0xa
+00007C06  EBFE              jmp short 0x7c06
