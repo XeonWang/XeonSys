@@ -66,11 +66,12 @@ L_START:
   add ax, 26
   mov bx, ax
   mov ax, [bx]
+  xor bx, bx
 .ReadLoaderSector:
   push ax
   add ax, 31  ; 31 = BeginOfRootSector + RootSectorNum - 2
   mov cl, 1
-  mov bx, BaseOfLoader
+  add bx, BaseOfLoader
   call ReadSector
   pop ax
   mov bx, 3
@@ -83,7 +84,7 @@ L_START:
   mov bx, ax
   mov ax, [bx]
   shr ax, 4
-  jmp .ReadLoaderSector
+  jmp .ReadNextLoaderSector
 .ByteBegin:
   add ax, BaseOfFATs
   mov bx, ax
@@ -92,6 +93,8 @@ L_START:
 .ReadNextLoaderSector:
   cmp ax, 0xFF7
   jg .LoaderLoaded
+  pop bx
+  inc bx
   jmp .ReadLoaderSector
 
 .LoaderLoaded:
