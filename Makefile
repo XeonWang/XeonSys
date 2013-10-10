@@ -13,7 +13,8 @@ boot/loader.bin: boot/loader.asm
 	nasm -I boot/include/ boot/loader.asm -o boot/loader.bin
 
 boot/kernel.bin: boot/kernel.asm
-	nasm boot/kernel.asm -o boot/kernel.bin
+	nasm -f elf boot/kernel.asm -o boot/kernel.o
+	ld -s -o boot/kernel.bin boot/kernel.o
 
 clear:
 	rm -f boot/*.bin

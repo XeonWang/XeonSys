@@ -1,4 +1,10 @@
-mov ah, 0xE
-mov al, 'X'
-int 0x10
-jmp $
+[section .text]
+
+global _start
+
+_start:
+	mov ah, 0xF
+	mov al, 'K'
+	mov [gs:((80 * 1 + 39) * 2)], ax
+	jmp $
+
