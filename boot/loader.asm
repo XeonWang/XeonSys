@@ -5,25 +5,20 @@ jmp L_START
 %include 'fat12hdr.inc'
 
 BaseOfFATs equ 0x0800
-BaseOfKernel equ 0x9200
+BaseOfKernel equ 0x0200
+SegOfKernel equ 0x8000
 
 L_START:
-  mov ax, 0x1
-  mov ds, ax
   mov dx, 0
 .SearchInRoot:
   cmp dx, RootSectorNum
   je .FileNotFoundInRoot
   push dx
-  push ds
-  mov ax, 0
-  mov ds, ax
   mov ax, dx
   add ax, BeginOfRootSector
   mov cl, 1
   mov bx, 0x7E00
   call ReadSector
-  pop ds
   ;find kernel from 0x7E00-0x8100
   mov cx, 0
 .SearchInSector:
@@ -35,6 +30,7 @@ L_START:
   mov bx, LengthOfRootEnt
   mul bl ;32
   add ax, 0x7E00
+  xor esi, esi
   mov si, ax
   mov di, KernelName
   call CompareStr
@@ -47,16 +43,27 @@ L_START:
   inc dx
   jmp .SearchInRoot
 .FileFound:
+  push ax
+  mov ax, [BPB_RsvdSecCnt]
+  mov bx, BaseOfFATs
+  mov cl, 1
+  call ReadSector
+  pop ax
   add ax, 26
   mov bx, ax
-  mov ax, [bx]
-  xor bx, bx
+  mov ax, [cs:bx]
+  mov bx, BaseOfKernel
 .ReadKernelSector:
   push ax
   add ax, 31 ; 31 = BeginOfRootSecotr + RootSectorNum - 2
   mov cl, 1
-  add bx, BaseOfKernel
+  push es
+  push ax
+  mov ax, SegOfKernel
+  mov es, ax
+  pop ax
   call ReadSector
+  pop es
   pop ax
   push bx
   mov bx, 3
@@ -79,12 +86,12 @@ L_START:
   cmp ax, 0xFF7
   jg .KernelLoaded
   pop bx
-  inc bx
+  add bx, word [BPB_BytsPerSec] 
   jmp .ReadKernelSector
 
 .KernelLoaded:
   mov ax, 0
-  jmp BaseOfKernel
+  jmp SegOfKernel:BaseOfKernel
 
   jmp $
 

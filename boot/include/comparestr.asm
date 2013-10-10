@@ -2,11 +2,16 @@
 
 CompareStr:
   push ax
+  mov cx, 11
 .Begin:
   cmp cx, 0
   je .Equal
+  push ds
+  mov ax, 0
+  mov ds, ax
   lodsb
-  cmp al, [di]
+  pop ds
+  cmp al, [cs:di]
   jne .NotEqual
   inc di
   loop .Begin

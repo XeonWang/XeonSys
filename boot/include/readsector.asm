@@ -3,9 +3,12 @@
 ReadSector:
   push dx
   push cx
-  
+
   div byte [BPB_SecPerTrk]
+  push ax
+  and ax, 0x0001
   mov dh, al
+  pop ax
   shr al, 1
   mov ch, al
   inc ah
