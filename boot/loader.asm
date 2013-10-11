@@ -7,6 +7,8 @@ jmp L_START
 BaseOfFATs equ 0x0800
 BaseOfKernel equ 0x0200
 SegOfKernel equ 0x8000
+SegOfRunableKernel equ 0x3000
+BaseOfRunableKernel equ 0x1000
 
 L_START:
   mov dx, 0
@@ -81,7 +83,7 @@ L_START:
   add ax, BaseOfFATs
   mov bx, ax
   mov ax, [bx]
-  add ax, 0x0FFF
+  and ax, 0x0FFF
 .ReadNextKernelSector:
   cmp ax, 0xFF7
   jg .KernelLoaded
@@ -91,15 +93,45 @@ L_START:
 
 .KernelLoaded:
   mov ax, 0
-  jmp SegOfKernel:BaseOfKernel
+  call relocateKernel
+  mov eax, 0xB800
+  mov gs, eax
+  jmp SegOfRunableKernel:BaseOfRunableKernel + 0x400
 
   jmp $
 
 .FileNotFoundInRoot:
   jmp $
 
+relocateKernel:
+  mov ax, SegOfKernel
+  mov ds, ax
+  xor edx, edx
+  mov dx, word [ds:BaseOfKernel + 0x2C]
+  mov eax, dword [ds:BaseOfKernel + 0x1C]
+.segmentloop: 
+  cmp edx, 0
+  je .return
+  mov ebx, dword [ds:BaseOfKernel + eax + 4]
+  mov ecx, dword [ds:BaseOfKernel + eax + 8]
+  
+  xor esi, esi
+  xor edi, edi
+  mov esi, ebx 
+  add esi, BaseOfKernel
+  mov edi, ecx
+  add edi, BaseOfRunableKernel
+  mov ecx, dword [ds:BaseOfKernel + eax + 16] 
+  call memcopy
+  dec edx
+  add eax, 0x20
+  jmp .segmentloop 
+.return:
+  ret
+
   %include 'readsector.asm'
   %include 'comparestr.asm'
+  %include 'memcopy.asm'
 
 KernelName db 'KERNEL  BIN'
 

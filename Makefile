@@ -10,11 +10,12 @@ boot/boot.bin: boot/boot.asm boot/include/fat12hdr.inc boot/include/readsector.a
 	nasm -I boot/include/ -o boot/boot.bin boot/boot.asm
 
 boot/loader.bin: boot/loader.asm
-	nasm -I boot/include/ boot/loader.asm -o boot/loader.bin
+	nasm -I boot/include/ -I util/ boot/loader.asm -o boot/loader.bin
 
 boot/kernel.bin: boot/kernel.asm
 	nasm -f elf boot/kernel.asm -o boot/kernel.o
-	ld -s -o boot/kernel.bin boot/kernel.o
+	ld -s -Ttext 0x400 -o boot/kernel.bin boot/kernel.o
 
 clear:
 	rm -f boot/*.bin
+	rm -f boot/*.o
