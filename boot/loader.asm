@@ -3,6 +3,12 @@ org 0x9200
 jmp L_START
 
 %include 'fat12hdr.inc'
+%include 'gdt.inc'
+
+GDT: Descriptor 0, 0, 0
+CodeSegmentGDT: Descriptor 0, 0xFFFF, 0x98
+DataSegmentGDT: Descriptor 0, 0xFFFF, 0x92
+VideoSegmentGDT: Descriptor 0xB8000, 0xFFFF, 0x92
 
 BaseOfFATs equ 0x0800
 BaseOfKernel equ 0x0200
