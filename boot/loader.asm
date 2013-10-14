@@ -5,34 +5,18 @@ jmp L_START
 %include 'fat12hdr.inc'
 %include 'gdt.inc'
 
-;GDT: Descriptor 0, 0, 0
-;CodeSegmentGDT: Descriptor 0x00000, 0xFFFFF, 0x4000 | 0x94 | 0x8000
-;DataSegmentGDT: Descriptor 0, 0xFFFFF, 0x92 | 0x4000 | 0x8000
-;VideoSegmentGDT: Descriptor 0xB8000, 0xFFFF, 0x92 | 0x60
+GDT: Descriptor 0, 0, 0
+CodeSegmentGDT: Descriptor 0x31000, 0xFFFFF, 0x4000 | 0x9A | 0x8000
+DataSegmentGDT: Descriptor 0, 0xFFFFF, 0x92 | 0x4000 | 0x8000
+VideoSegmentGDT: Descriptor 0xB8000, 0xFFFF, 0x92 | 0x60
 
-;GDTLen equ $ - GDT
-;GDTPtr dw GDTLen - 1
-;	dd 0x9200 + GDT
+GDTLen equ $ - GDT
+GDTPtr dw GDTLen - 1
+	dd GDT
 
-;CodeSegmentSel equ CodeSegmentGDT - GDT
-;DataSegmentSel equ DataSegmentGDT - GDT
-;VideoSegmentSel equ VideoSegmentGDT - GDT
-
-LABEL_GDT:			Descriptor             0,                    0, 0						; 空描述符
-LABEL_DESC_FLAT_C:		Descriptor             0x31000,              0fffffh, DA_CR  | DA_32 | DA_LIMIT_4K			; 0 ~ 4G
-LABEL_DESC_FLAT_RW:		Descriptor             0,              0fffffh, DA_DRW | DA_32 | DA_LIMIT_4K			; 0 ~ 4G
-LABEL_DESC_VIDEO:		Descriptor	 0B8000h,               0ffffh, DA_DRW                         | DA_DPL3	; 显存首地址
-; GDT ------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-GdtLen		equ	$ - LABEL_GDT
-GdtPtr		dw	GdtLen - 1				; 段界限
-		dd	LABEL_GDT		; 基地址
-
-; GDT 选择子 ----------------------------------------------------------------------------------
-SelectorFlatC		equ	LABEL_DESC_FLAT_C	- LABEL_GDT
-SelectorFlatRW		equ	LABEL_DESC_FLAT_RW	- LABEL_GDT
-SelectorVideo		equ	LABEL_DESC_VIDEO	- LABEL_GDT + SA_RPL3
-; GDT 选择子 ----------------------------------------------------------------------------------
+CodeSegmentSel equ CodeSegmentGDT - GDT
+DataSegmentSel equ DataSegmentGDT - GDT
+VideoSegmentSel equ VideoSegmentGDT - GDT
 
 BaseOfFATs equ 0x0800
 BaseOfKernel equ 0x0200
@@ -131,9 +115,8 @@ L_START:
   mov es, ax
   mov ss, ax
   mov gs, ax
-
   
-  lgdt [GdtPtr]
+  lgdt [GDTPtr]
   cli
   in al, 0x92
   or al, 00000010b
@@ -143,11 +126,9 @@ L_START:
   or eax, 1
   mov cr0, eax
 
-  mov ax, SelectorVideo
+  mov ax, VideoSegmentSel
   mov gs, ax
-;jmp CodeSegmentSel:BaseOfRunableKernel + 0x400
-  ;jmp dword SelectorFlatC:0x9200+PM_START
-  jmp dword SelectorFlatC:0x400
+  jmp dword CodeSegmentSel:0x400
 
   jmp $
 
