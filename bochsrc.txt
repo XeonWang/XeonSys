@@ -1,0 +1,4 @@
+floppya: image="os.img", status=inserted
+display_library: x, options="gui_debug"
+
+boot: floppy
