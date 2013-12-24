@@ -1,6 +1,7 @@
 #include <descriptor.h>
 
 struct global_desc gdt[256];
+struct interrupt_desc idt[256];
 
 void set_global_seg()
 {
@@ -46,6 +47,7 @@ void main() {
 	test_C();
 	
 	set_global_seg();
-	struct gdt_desc gdt_descriptor = {256*8-1, (unsigned long)&gdt[0]};
-	_LGDT(gdt_descriptor);
+	struct desc_desc gdt_desc = {256*8-1, (unsigned long)&gdt[0]};
+	_LGDT(gdt_desc);
+	struct desc_desc idt_desc = {256*8-1, (unsigned long)&idt[0]};
 }

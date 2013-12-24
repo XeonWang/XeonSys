@@ -6,6 +6,11 @@
 	::"m" (descriptor) \
 )
 
+#define _LIDT(descriptor) __asm__( \
+	"lidt %0\n\t" \
+	::"m" (descriptor) \
+)
+
 #endif
 
 struct global_desc {
@@ -17,8 +22,15 @@ struct global_desc {
 	char base_24_31; 
 };
 
+struct interrupt_desc {
+	short addr_0_15;
+	short seg_selector;
+	short type;
+	short addr_16_31;	
+};
+
 #pragma pack (2)
-struct gdt_desc {
+struct desc_desc {
 	short limit;
 	unsigned long addr;
 };
