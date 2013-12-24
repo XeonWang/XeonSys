@@ -1,12 +1,9 @@
 #ifndef _DESC_H
 #define _DESC_H
 
-#define _LGDT(gdt) __asm__( \
-	"lgdt gdt_desc\n\t" \
-	"gdt_desc:\n\t" \
-	".word 256*8-1 \n\t"\
-	".long %0" \
-	::"m" (*gdt) \
+#define _LGDT(descriptor) __asm__( \
+	"lgdt %0\n\t" \
+	::"m" (descriptor) \
 )
 
 #endif
@@ -19,3 +16,10 @@ struct global_desc {
 	char limit_16_19; //this field include G, AVL, and limit bit 16-19...
 	char base_24_31; 
 };
+
+#pragma pack (2)
+struct gdt_desc {
+	short limit;
+	unsigned long addr;
+};
+#pragma pack ()
