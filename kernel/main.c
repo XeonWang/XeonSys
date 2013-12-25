@@ -1,4 +1,5 @@
 #include <descriptor.h>
+#include <register.h>
 
 struct global_desc gdt[256];
 struct interrupt_desc idt[256];
@@ -53,4 +54,5 @@ void main() {
 	_LIDT(idt_desc);
 	
 	set_init_task();
+	_STI();
 }

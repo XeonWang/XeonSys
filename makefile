@@ -12,7 +12,7 @@ kernel.bin: kernel/main.c kernel/task.c entry.asm
 	gcc -ffreestanding -c kernel/main.c -o kernel/main.o -I include
 	gcc -ffreestanding -c kernel/task.c -o kernel/task.o -I include
 	gcc -ffreestanding -c kernel/interrupt.c -o kernel/interrupt.o -I include
-	ld -o kernel.bin -Ttext 0x7E00 entry.o kernel/main.o kernel/task.o kernel/interrupt.o --oformat binary
+	ld -o kernel.bin -Ttext 0xB00 entry.o kernel/main.o kernel/task.o kernel/interrupt.o --oformat binary
 
 all.bin: boot loader kernel.bin
 	cat boot init_GDT_IDT kernel.bin > all.bin

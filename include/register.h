@@ -20,4 +20,6 @@
 	); \
 }
 
+#define _STI() __asm__("sti");
+
 #endif
