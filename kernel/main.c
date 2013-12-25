@@ -51,5 +51,6 @@ void main() {
 	_LGDT(gdt_desc);
 	struct desc_desc idt_desc = {256*8-1, (unsigned long)&idt[0]};
 	_LIDT(idt_desc);
+	
 	set_init_task();
 }
