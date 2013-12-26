@@ -22,3 +22,5 @@ clean:
 	rm -f *.bin
 	rm -f kernel/*.o kernel/*.bin
 
+fd: all.bin
+	dd conv=notrunc if=all.bin of=/dev/fd0 bs=512 count=10
