@@ -2,7 +2,7 @@ image: all.bin
 	dd conv=notrunc if=all.bin of=os.img bs=512 count=10
 
 boot: boot.asm
-	nasm boot.asm -o boot
+	nasm boot.asm -o boot.bin
 
 loader: init_GDT_IDT.asm
 	nasm init_GDT_IDT.asm
@@ -15,7 +15,7 @@ kernel.bin: kernel/main.c kernel/task.c entry.asm
 	ld -o kernel.bin -Ttext 0xB00 entry.o kernel/main.o kernel/task.o kernel/interrupt.o --oformat binary
 
 all.bin: boot loader kernel.bin
-	cat boot init_GDT_IDT kernel.bin > all.bin
+	cat boot.bin init_GDT_IDT kernel.bin > all.bin
 
 clean:
 	rm -f *.o
