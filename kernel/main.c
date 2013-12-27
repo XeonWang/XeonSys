@@ -55,4 +55,5 @@ void main() {
 	
 	set_init_task();
 	_STI();
+	change_to_user_mode();
 }

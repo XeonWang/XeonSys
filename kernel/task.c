@@ -24,9 +24,9 @@ void set_init_task() {
 	};
 	struct desc_struct init_ldt[4] = {
 		{0, 0}, 
-		{0xFFFF, 0x80EA10},  //limit=0xFFFF, base_addr=0x100000, type=1010, P_DPL_S=1111, G_D=1000
-		{0xFFFF, 0x80E210},  //limit=0xFFFF, base_addr=0x100000, type=0010, P_DPL_S=1111, G_B=1000 
-		{0xFFFF, 0x80E210}
+		{0x0000009f, 0xC0FA00},  //limit=0xFFFF, base_addr=0x100000, type=1010, P_DPL_S=1111, G_D=1000
+		{0x0000009f, 0xC0F200},  //limit=0xFFFF, base_addr=0x100000, type=0010, P_DPL_S=1111, G_B=1000 
+		{0x0000009f, 0xC0F200}  //limit=0xFFFF, base_addr=0x100000, type=0010, P_DPL_S=1111, G_B=1000 
 	};
 	add_to_gdt(&gdt[4], 104, &init_tss, 0x89);
 	add_to_gdt(&gdt[5], 32, &init_ldt[0], 0x82);
