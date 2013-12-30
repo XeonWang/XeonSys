@@ -1,5 +1,6 @@
 #include <descriptor.h>
 #include <register.h>
+#include <fork.h>
 
 struct global_desc gdt[256];
 struct interrupt_desc idt[256];
@@ -56,4 +57,6 @@ void main() {
 	set_init_task();
 	_STI();
 	change_to_user_mode();
+	
+	fork();
 }

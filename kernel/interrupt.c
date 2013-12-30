@@ -1,8 +1,12 @@
 #define _IRET() __asm__("leave \n\t iret")
 
-#typedef int (*syscall_impl)();
+typedef int (*syscall_impl)();
 
 extern int fork_impl();
+
+syscall_impl implements[] = {
+	fork_impl
+};
 
 void clock_interrupt() {
 	char *video_memory = (char*) 0xB8000;
@@ -16,9 +20,3 @@ void clock_interrupt() {
 void sys_call_interrupt() {
 	__asm__("call %0(,%%eax,4)"::"m" (implements[0]));
 }
-
-syscall_impl implements[] = {
-	fork_impl
-};
-
-
