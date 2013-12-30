@@ -33,4 +33,5 @@ void set_init_task() {
 	_LTR((unsigned short)(4<<3));
 	_LLDT(5<<3);
 	set_interrupt(0x20, &clock_interrupt, 8);
+	set_interrupt(0x80, &sys_call_interrupt, 8);
 }
