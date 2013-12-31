@@ -1,11 +1,11 @@
+
 #define _IRET() __asm__("leave \n\t iret")
 
+extern int fork_impl();
 typedef int (*syscall_impl)();
 
-extern int fork_impl();
-
 syscall_impl implements[] = {
-	fork_impl
+    fork_impl
 };
 
 void clock_interrupt() {
@@ -18,5 +18,7 @@ void clock_interrupt() {
 }
 
 void sys_call_interrupt() {
-	__asm__("call %0(,%%eax,4)"::"m" (implements[0]));
+    implements[0] = fork_impl;
+    __asm__("call %%ebx"::"b" (implements[0]));
+    _IRET();
 }
