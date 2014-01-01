@@ -1,6 +1,8 @@
 #ifndef _DESC_H
 #define _DESC_H
 
+#define MAX_PROCESS 256
+
 #define _LGDT(descriptor) __asm__( \
 	"lgdt %0\n\t" \
 	::"m" (descriptor) \
@@ -64,6 +66,10 @@ struct interrupt_desc {
 	short seg_selector;
 	short type;
 	short addr_16_31;	
+};
+
+struct desc_struct {
+    long a, b;
 };
 
 #pragma pack (2)

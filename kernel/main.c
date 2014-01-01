@@ -2,8 +2,8 @@
 #include <register.h>
 #include <fork.h>
 
-struct global_desc gdt[256];
-struct interrupt_desc idt[256];
+struct global_desc gdt[MAX_PROCESS];
+struct interrupt_desc idt[MAX_PROCESS];
 
 void set_global_seg()
 {
