@@ -1,5 +1,7 @@
 #include <sys_call.h>
+#include <descriptor.h>
 
+extern struct global_desc gdt[];
 extern struct desc_struct ldt[];
 
 long get_next_seg_index();
