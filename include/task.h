@@ -26,4 +26,13 @@ struct tss_struct {
 	short	io;
 };
 
+struct pcb_struct {
+    unsigned short pid;
+    unsigned short ppid;
+    unsigned short ldt_selector;
+    char time_remain;
+};
+
 void set_init_task();
+int get_empty_process();
+unsigned short get_next_pid();

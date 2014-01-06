@@ -1,8 +1,12 @@
 #include <sys_call.h>
 #include <descriptor.h>
+#include <task.h>
 
 extern struct global_desc gdt[];
 extern struct desc_struct ldt[];
+extern pcb_struct processes[];
+extern pcb_struct *runable_processes[];
+extern pcb_struct *blocked_processes[];
 
 long get_next_seg_index();
 
@@ -38,4 +42,11 @@ int fork_impl()
     ldt[index*4+3].b = 0xC0F200+base_addr_middle8+base_addr_high8;
 
     add_to_gdt(&gdt[index], 32, &ldt[index*4], 0x82);
+
+    int empty_pcb = get_empty_process();
+    if(empty_pcb == -1) return -1;
+    processes[empty_pcb].pid = get_next_pid();
+    processes[empty_pcb].ppid = 0;  //TODO set as appropriate value
+    processes[empty_pcb].time_remain = 5;
+    processes[empty_pcb].ldt_selector = index << 3;
 }

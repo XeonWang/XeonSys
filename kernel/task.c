@@ -6,6 +6,32 @@
 extern struct global_desc gdt[];
 extern struct interrupt_desc idt[];
 struct desc_struct ldt[MAX_PROCESS*4];
+struct pcb_struct pcb[MAX_PROCESS];
+
+pcb_struct processes[MAX_PROCESS];
+pcb_struct *runable_processes[MAX_PROCESS];
+pcb_struct *blocked_processes[MAX_PROCESS];
+
+int get_empty_process() {
+    int i;
+    for(i = 0 ; i < MAX_PROCESS ; i++) {
+        if(processes[i] == NULL) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+unsigned short get_next_pid() {
+    unsigned short max_pid = 0;
+    int i;
+    for(i = 0 ; i < MAX_PROCESS ; i++) {
+        if(processes[i] != NULL && processes[i].pid > max_pid) {
+            max_pid = processes[i].pid;
+        }
+    }
+    return max_pid + 1;
+}
 
 void set_interrupt(int index, void (*addr)(), unsigned short seg_selector, unsigned short dpl) {
 	idt[index].addr_0_15 = (unsigned short)addr; 
