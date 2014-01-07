@@ -5,9 +5,9 @@
 
 extern struct global_desc gdt[];
 extern struct desc_struct ldt[];
-extern pcb_struct processes[];
-extern pcb_struct *runable_processes[];
-extern pcb_struct *blocked_processes[];
+extern struct pcb_struct processes[];
+extern struct pcb_struct *runable_processes[];
+extern struct pcb_struct *blocked_processes[];
 extern struct pcb_struct pcb[];
 
 long get_next_seg_index();
@@ -15,7 +15,7 @@ long get_next_seg_index();
 int fork()
 {
     unsigned short task_index = get_task_index();
-    __asm__("movl %1, %%eax \n\t" \
+    __asm__("movl %0, %%eax \n\t" \
             "addl $8, %%eax \n\t" \
             "movw %%cs, (%%eax) \n\t" \
             "addl $2, %%eax \n\t" \
@@ -45,7 +45,10 @@ int fork()
             "addl $4, %%eax \n\t" \
             "movl %%edi, (%%eax) \n\t" \
             "addl $4, %%eax \n\t" \
-            "movl %%eip, (%%eax) \n\t" \
+            "get_eip: movl %%esp, %%ebx \n\t" \
+            "ret \n\t" \
+             "call get_eip \n\t" \
+            "movl %%ebx, (%%eax) \n\t" \
             "addl $4, %%eax \n\t" \
             "pushf \n\t" \
             "pushl %%ebx \n\t" \
@@ -53,7 +56,7 @@ int fork()
             "movl %%ebx, (%%eax) \n\t" \
             "popl %%ebx \n\t" \
             "popf \n\t" \
-            ::"m" (pcb[task_index]):"a");
+    ::"m" (pcb[task_index]):"eax", "ebx");
     __asm__(""::"b" (task_index));
     system_call(SYS_CALL_FORK);
 }
@@ -114,7 +117,7 @@ int fork_impl()
     processes[empty_pcb].ldt_selector = index << 3;
     copy_registers(task_index, empty_pcb);
 
-    memory_copy(0, 0, empty_pcb*4 << 3 + 7, 0, TASK_SIZE);
+    memory_copy(0, 0, (((empty_pcb*4) << 3) + 7), 0, TASK_SIZE);
 
     to_runable(&processes[empty_pcb]);
 }

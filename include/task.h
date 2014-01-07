@@ -1,3 +1,4 @@
+#define TASK_SIZE 0x9f*4*1024
 
 struct tss_struct {
 	long	back_link;	/* 16 high bits zero */

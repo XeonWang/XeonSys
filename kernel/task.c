@@ -2,20 +2,21 @@
 #include <register.h>
 #include <task.h>
 #include <interrupt.h>
+#include <const.h>
 
 extern struct global_desc gdt[];
 extern struct interrupt_desc idt[];
 struct desc_struct ldt[MAX_PROCESS*4];
 struct pcb_struct pcb[MAX_PROCESS];
 
-pcb_struct processes[MAX_PROCESS];
-pcb_struct *runable_processes[MAX_PROCESS];
-pcb_struct *blocked_processes[MAX_PROCESS];
+struct pcb_struct processes[MAX_PROCESS];
+struct pcb_struct *runable_processes[MAX_PROCESS];
+struct pcb_struct *blocked_processes[MAX_PROCESS];
 
 int get_empty_process() {
     int i;
     for(i = 6 ; i < MAX_PROCESS ; i++) {
-        if(processes[i] == NULL) {
+        if(processes[i].pid == 0) {
             return i;
         }
     }
@@ -26,7 +27,7 @@ unsigned short get_next_pid() {
     unsigned short max_pid = 0;
     int i;
     for(i = 0 ; i < MAX_PROCESS ; i++) {
-        if(processes[i] != NULL && processes[i].pid > max_pid) {
+        if(processes[i].pid > max_pid) {
             max_pid = processes[i].pid;
         }
     }
@@ -77,13 +78,13 @@ long get_next_seg_index() {
 unsigned short get_task_index() {
     unsigned short index;
     __asm__("sldt %%eax \n\t" \
-            "shr %%eax, $3 \n\t" \
+            "shr $3, %%eax \n\t" \
             "":"=ax" (index));
     return index;
 }
 
 unsigned short get_pid() {
-    return pcb[get_task_index()];
+    return pcb[get_task_index()].pid;
 }
 
 void to_runable(struct pcb_struct *task) {
