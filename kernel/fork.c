@@ -45,9 +45,10 @@ int fork()
             "addl $4, %%eax \n\t" \
             "movl %%edi, (%%eax) \n\t" \
             "addl $4, %%eax \n\t" \
-            "get_eip: movl %%esp, %%ebx \n\t" \
+            "jmp get_eip2 \n\t" \
+            "get_eip: movl (%%esp), %%ebx \n\t" \
             "ret \n\t" \
-             "call get_eip \n\t" \
+             "get_eip2: call get_eip \n\t" \
             "movl %%ebx, (%%eax) \n\t" \
             "addl $4, %%eax \n\t" \
             "pushf \n\t" \
@@ -56,7 +57,7 @@ int fork()
             "movl %%ebx, (%%eax) \n\t" \
             "popl %%ebx \n\t" \
             "popf \n\t" \
-    ::"m" (pcb[task_index]):"eax", "ebx");
+    ::"p" (&pcb[task_index]):"eax", "ebx");
     __asm__(""::"b" (task_index));
     system_call(SYS_CALL_FORK);
 }
