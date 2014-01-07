@@ -26,13 +26,33 @@ struct tss_struct {
 	short	io;
 };
 
+#pragma pack (2)
 struct pcb_struct {
     unsigned short pid;
     unsigned short ppid;
     unsigned short ldt_selector;
-    char time_remain;
+    unsigned short time_remain;
+    unsigned short cs;
+    unsigned short ds;
+    unsigned short es;
+    unsigned short fs;
+    unsigned short gs;
+    unsigned short ss;
+    int eax;
+    int ebx;
+    int ecx;
+    int edx;
+    int esp;
+    int ebp;
+    int esi;
+    int edi;
+    int eip;
+    int eflags;
 };
+#pragma pack ()
 
 void set_init_task();
 int get_empty_process();
 unsigned short get_next_pid();
+unsigned short get_pid();
+unsigned short get_task_index();

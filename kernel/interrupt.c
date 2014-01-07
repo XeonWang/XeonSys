@@ -19,6 +19,8 @@ void clock_interrupt() {
 
 void sys_call_interrupt() {
     implements[0] = fork_impl;
-    __asm__("call %%ebx"::"b" (implements[0]));
+    __asm__("shld %%eax, $5 \n\t" \
+            "addd %%eax, %%ebx \n\t" \
+            "call %%eax"::"b" (implements[0]));
     _IRET();
 }

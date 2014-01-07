@@ -14,7 +14,7 @@ pcb_struct *blocked_processes[MAX_PROCESS];
 
 int get_empty_process() {
     int i;
-    for(i = 0 ; i < MAX_PROCESS ; i++) {
+    for(i = 6 ; i < MAX_PROCESS ; i++) {
         if(processes[i] == NULL) {
             return i;
         }
@@ -72,4 +72,25 @@ void set_init_task() {
 
 long get_next_seg_index() {
     return 0x38;
+}
+
+unsigned short get_task_index() {
+    unsigned short index;
+    __asm__("sldt %%eax \n\t" \
+            "shr %%eax, $3 \n\t" \
+            "":"=ax" (index));
+    return index;
+}
+
+unsigned short get_pid() {
+    return pcb[get_task_index()];
+}
+
+void to_runable(struct pcb_struct *task) {
+    int i;
+    for(i = 6 ; i < MAX_PROCESS ; i++) {
+        if(runable_processes[i] == NULL) {
+            runable_processes[i] = task;
+        }
+    }
 }
