@@ -15,7 +15,7 @@ struct pcb_struct *blocked_processes[MAX_PROCESS];
 
 int get_empty_process() {
     int i;
-    for(i = 6 ; i < MAX_PROCESS ; i++) {
+    for(i = FIRST_PROCESS_INDEX ; i < MAX_PROCESS ; i++) {
         if(processes[i].pid == 0) {
             return i;
         }
@@ -41,6 +41,17 @@ void set_interrupt(int index, void (*addr)(), unsigned short seg_selector, unsig
 	idt[index].addr_16_31 = (unsigned short)((unsigned)addr>>16); 
 }
 
+void set_global_ldt() {
+    ldt[0].a = 0;
+    ldt[0].b = 0;
+    ldt[1].a = 0x0000ffff;
+    ldt[1].b = 0xC0FA00;
+    ldt[2].a = 0x0000ffff;
+    ldt[2].b = 0xC0F200;
+    ldt[3].a = 0x0000ffff;
+    ldt[3].b = 0xC0F200;
+}
+
 void set_init_task() {
 	struct tss_struct init_tss = {
      0,0xb00,0x10,0,0,0,0,0, \
@@ -55,6 +66,8 @@ void set_init_task() {
 		{0x0000009f, 0xC0F200}  //limit=0xFFFF, base_addr=0x100000, type=0010, P_DPL_S=1111, G_B=1000 
 	};
     */
+//    set_global_ldt();
+
     ldt[0].a = 0;
     ldt[0].b = 0;
     ldt[1].a = 0x0000009f;
@@ -64,15 +77,16 @@ void set_init_task() {
     ldt[3].a = 0x0000009f;
     ldt[3].b = 0xC0F200;
     add_to_gdt(&gdt[4], 104, &init_tss, 0x89);
-    add_to_gdt(&gdt[5], 32, &ldt[0], 0x82);
+    add_to_gdt(&gdt[5], 8*256, &ldt[0], 0x82); //global ldt segment limit is ffff
+    add_to_gdt(&gdt[6], 32, &ldt[0], 0x82);
 	_LTR((unsigned short)(4<<3));
-	_LLDT(5<<3);
+    _LLDT(6<<3);
     set_interrupt(0x20, &clock_interrupt, 8, 0);
     set_interrupt(0x80, &sys_call_interrupt, 8, 3);
 }
 
 long get_next_seg_index() {
-    return 0x38;
+    return FIRST_PROCESS_INDEX;
 }
 
 unsigned short get_task_index() {
@@ -89,9 +103,10 @@ unsigned short get_pid() {
 
 void to_runable(struct pcb_struct *task) {
     int i;
-    for(i = 6 ; i < MAX_PROCESS ; i++) {
+    for(i = FIRST_PROCESS_INDEX ; i < MAX_PROCESS ; i++) {
         if(runable_processes[i] == NULL) {
             runable_processes[i] = task;
+            break;
         }
     }
 }

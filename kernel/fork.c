@@ -88,8 +88,8 @@ int fork_impl()
     long index = get_next_seg_index();
     unsigned long base_addr = 0x100000 + TASK_SIZE*index;
     unsigned long base_addr_low16 = base_addr << 16;
-    unsigned long base_addr_high8 = base_addr | 0xFF000000;
-    unsigned long base_addr_middle8 = (base_addr | 0x00FF0000) >> 16;
+    unsigned long base_addr_high8 = base_addr & 0xFF000000;
+    unsigned long base_addr_middle8 = (base_addr & 0x00FF0000) >> 16;
     /*
     struct desc_struct init_ldt[4] = {
         {0, 0},
@@ -99,14 +99,22 @@ int fork_impl()
     };
     */
 
+//    ldt[index*4+0].a = 0;
+//    ldt[index*4+0].b = 0;
+//    ldt[index*4+1].a = 0x0000009f+base_addr_low16;
+//    ldt[index*4+1].b = 0xC0FA00+base_addr_middle8+base_addr_high8;
+//    ldt[index*4+2].a = 0x0000009f+base_addr_low16;
+//    ldt[index*4+2].b = 0xC0F200+base_addr_middle8+base_addr_high8;
+//    ldt[index*4+3].a = 0x0000009f+base_addr_low16;
+//    ldt[index*4+3].b = 0xC0F200+base_addr_middle8+base_addr_high8;
     ldt[index*4+0].a = 0;
     ldt[index*4+0].b = 0;
-    ldt[index*4+1].a = 0x0000009f+base_addr_low16;
-    ldt[index*4+1].b = 0xC0FA00+base_addr_middle8+base_addr_high8;
-    ldt[index*4+2].a = 0x0000009f+base_addr_low16;
-    ldt[index*4+2].b = 0xC0F200+base_addr_middle8+base_addr_high8;
-    ldt[index*4+3].a = 0x0000009f+base_addr_low16;
-    ldt[index*4+3].b = 0xC0F200+base_addr_middle8+base_addr_high8;
+    ldt[index*4+1].a = 0x0000009f;
+    ldt[index*4+1].b = 0xC0FA00;
+    ldt[index*4+2].a = 0x0000009f;
+    ldt[index*4+2].b = 0xC0F200;
+    ldt[index*4+3].a = 0x0000009f;
+    ldt[index*4+3].b = 0xC0F200;
 
     add_to_gdt(&gdt[index], 32, &ldt[index*4], 0x82);
 
@@ -118,7 +126,7 @@ int fork_impl()
     processes[empty_pcb].ldt_selector = index << 3;
     copy_registers(task_index, empty_pcb);
 
-    memory_copy(0, 0, (((empty_pcb*4) << 3) + 7), 0, TASK_SIZE);
+    memory_copy(0, 0, (((empty_pcb*4+2) << 3) + 7), 0, TASK_SIZE);
 
     to_runable(&processes[empty_pcb]);
 }
