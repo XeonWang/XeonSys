@@ -99,22 +99,22 @@ int fork_impl()
     };
     */
 
-//    ldt[index*4+0].a = 0;
-//    ldt[index*4+0].b = 0;
-//    ldt[index*4+1].a = 0x0000009f+base_addr_low16;
-//    ldt[index*4+1].b = 0xC0FA00+base_addr_middle8+base_addr_high8;
-//    ldt[index*4+2].a = 0x0000009f+base_addr_low16;
-//    ldt[index*4+2].b = 0xC0F200+base_addr_middle8+base_addr_high8;
-//    ldt[index*4+3].a = 0x0000009f+base_addr_low16;
-//    ldt[index*4+3].b = 0xC0F200+base_addr_middle8+base_addr_high8;
     ldt[index*4+0].a = 0;
     ldt[index*4+0].b = 0;
-    ldt[index*4+1].a = 0x0000009f;
-    ldt[index*4+1].b = 0xC0FA00;
-    ldt[index*4+2].a = 0x0000009f;
-    ldt[index*4+2].b = 0xC0F200;
-    ldt[index*4+3].a = 0x0000009f;
-    ldt[index*4+3].b = 0xC0F200;
+    ldt[index*4+1].a = 0x0000009f+base_addr_low16;
+    ldt[index*4+1].b = 0xC0FA00+base_addr_middle8+base_addr_high8;
+    ldt[index*4+2].a = 0x0000009f+base_addr_low16;
+    ldt[index*4+2].b = 0xC0F200+base_addr_middle8+base_addr_high8;
+    ldt[index*4+3].a = 0x0000009f+base_addr_low16;
+    ldt[index*4+3].b = 0xC0F200+base_addr_middle8+base_addr_high8;
+//    ldt[index*4+0].a = 0;
+//    ldt[index*4+0].b = 0;
+//    ldt[index*4+1].a = 0x0000009f;
+//    ldt[index*4+1].b = 0xC0FA00;
+//    ldt[index*4+2].a = 0x0000009f;
+//    ldt[index*4+2].b = 0xC0F200;
+//    ldt[index*4+3].a = 0x0000009f;
+//    ldt[index*4+3].b = 0xC0F200;
 
     add_to_gdt(&gdt[index], 32, &ldt[index*4], 0x82);
 
