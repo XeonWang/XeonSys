@@ -1,2 +1,3 @@
 #define NULL 0
-#define FIRST_PROCESS_INDEX 6
+#define FIRST_PROCESS_INDEX 7
+#define MAX_PROCESS 256

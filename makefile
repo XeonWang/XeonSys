@@ -14,7 +14,7 @@ kernel.bin: kernel/main.c kernel/task.c entry.asm
 	gcc -ffreestanding -c kernel/interrupt.c -o kernel/interrupt.o -I include
 	gcc -ffreestanding -c kernel/fork.c -o kernel/fork.o -I include
 	gcc -ffreestanding -c kernel/sys_call.c -o kernel/sys_call.o -I include
-	ld -o kernel.bin -Ttext 0xB00 entry.o kernel/main.o kernel/task.o kernel/fork.o kernel/interrupt.o kernel/sys_call.o --oformat binary
+	ld -o kernel.bin -Ttext 0xB00 entry.o kernel/main.o kernel/task.o kernel/fork.o kernel/interrupt.o kernel/sys_call.o --oformat binary -M
 
 all.bin: boot loader kernel.bin
 	cat boot.bin init_GDT_IDT kernel.bin > all.bin

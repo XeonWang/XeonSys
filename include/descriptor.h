@@ -1,7 +1,6 @@
 #ifndef _DESC_H
 #define _DESC_H
 
-#define MAX_PROCESS 256
 
 #define _LGDT(descriptor) __asm__( \
 	"lgdt %0\n\t" \

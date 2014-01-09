@@ -1,6 +1,7 @@
 #include <descriptor.h>
 #include <register.h>
 #include <fork.h>
+#include <const.h>
 
 struct global_desc gdt[MAX_PROCESS];
 struct interrupt_desc idt[MAX_PROCESS];

@@ -85,8 +85,15 @@ void set_init_task() {
     set_interrupt(0x80, &sys_call_interrupt, 8, 3);
 }
 
-long get_next_seg_index() {
-    return FIRST_PROCESS_INDEX;
+short get_next_seg_index() {
+//    return FIRST_PROCESS_INDEX;
+    int i;
+    for(i = FIRST_PROCESS_INDEX ; i < MAX_PROCESS ; i++) {
+        if(gdt[i].limit_0_7 == NULL && gdt[i].limit_8_15 == NULL && gdt[i].limit_16_19 == NULL) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 unsigned short get_task_index() {
