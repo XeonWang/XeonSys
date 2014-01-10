@@ -122,7 +122,7 @@ int fork_impl()
     if(empty_pcb == -1) return -1;
     processes[empty_pcb].pid = get_next_pid();
     processes[empty_pcb].ppid = pcb[task_index].pid;
-    processes[empty_pcb].time_remain = 5;
+    processes[empty_pcb].time_remain = TASK_TIMES;
     processes[empty_pcb].ldt_selector = index << 3;
     copy_registers(task_index, empty_pcb);
 

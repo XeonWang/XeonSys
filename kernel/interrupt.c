@@ -1,5 +1,6 @@
-
 #define _IRET() __asm__("leave \n\t iret")
+
+extern struct interrupt_desc idt[];
 
 extern int fork_impl();
 typedef int (*syscall_impl)();
@@ -26,4 +27,11 @@ void sys_call_interrupt() {
             "addl %%ecx, %%eax \n\t" \
             "call %%eax"::"c" (implements[0]));
     _IRET();
+}
+
+void set_interrupt(int index, void (*addr)(), unsigned short seg_selector, unsigned short dpl) {
+    idt[index].addr_0_15 = (unsigned short)addr;
+    idt[index].seg_selector = seg_selector;
+    idt[index].type = 0x8E00+(dpl<<13);
+    idt[index].addr_16_31 = (unsigned short)((unsigned)addr>>16);
 }

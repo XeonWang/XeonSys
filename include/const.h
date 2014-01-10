@@ -1,3 +1,4 @@
 #define NULL 0
 #define FIRST_PROCESS_INDEX 7
 #define MAX_PROCESS 256
+#define TASK_TIMES 5

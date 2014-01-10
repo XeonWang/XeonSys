@@ -34,13 +34,6 @@ unsigned short get_next_pid() {
     return max_pid + 1;
 }
 
-void set_interrupt(int index, void (*addr)(), unsigned short seg_selector, unsigned short dpl) {
-	idt[index].addr_0_15 = (unsigned short)addr; 
-	idt[index].seg_selector = seg_selector; 
-    idt[index].type = 0x8E00+(dpl<<13);
-	idt[index].addr_16_31 = (unsigned short)((unsigned)addr>>16); 
-}
-
 void set_global_ldt() {
     ldt[0].a = 0;
     ldt[0].b = 0;
@@ -115,5 +108,15 @@ void to_runable(struct pcb_struct *task) {
             runable_processes[i] = task;
             break;
         }
+    }
+}
+
+void schedule() {
+    unsigned short task_index = get_task_index();
+    if(pcb[task_index].time_remain > 0) {
+        pcb[task_index].time_remain--;
+    } else {
+        pcb[task_index].time_remain = TASK_TIMES;
+        record_current_task_pcb();
     }
 }

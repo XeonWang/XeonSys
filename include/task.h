@@ -1,5 +1,51 @@
 #define TASK_SIZE 0x9f*4*1024
 
+#define record_current_task_pcb(task_index) {\
+    __asm__("movl %0, %%eax \n\t" \
+            "addl $8, %%eax \n\t" \
+            "movw %%cs, (%%eax) \n\t" \
+            "addl $2, %%eax \n\t" \
+            "movw %%ds, (%%eax) \n\t" \
+            "addl $2, %%eax \n\t" \
+            "movw %%es, (%%eax) \n\t" \
+            "addl $2, %%eax \n\t" \
+            "movw %%fs, (%%eax) \n\t" \
+            "addl $2, %%eax \n\t" \
+            "movw %%gs, (%%eax) \n\t" \
+            "addl $2, %%eax \n\t" \
+            "movw %%ss, (%%eax) \n\t" \
+            "addl $2, %%eax \n\t" \
+            "movl %%eax, (%%eax) \n\t" \
+            "addl $4, %%eax \n\t" \
+            "movl %%ebx, (%%eax) \n\t" \
+            "addl $4, %%eax \n\t" \
+            "movl %%ecx, (%%eax) \n\t" \
+            "addl $4, %%eax \n\t" \
+            "movl %%edx, (%%eax) \n\t" \
+            "addl $4, %%eax \n\t" \
+            "movl %%esp, (%%eax) \n\t" \
+            "addl $4, %%eax \n\t" \
+            "movl %%ebp, (%%eax) \n\t" \
+            "addl $4, %%eax \n\t" \
+            "movl %%esi, (%%eax) \n\t" \
+            "addl $4, %%eax \n\t" \
+            "movl %%edi, (%%eax) \n\t" \
+            "addl $4, %%eax \n\t" \
+            "jmp get_eip2 \n\t" \
+            "get_eip: movl (%%esp), %%ebx \n\t" \
+            "ret \n\t" \
+             "get_eip2: call get_eip \n\t" \
+            "movl %%ebx, (%%eax) \n\t" \
+            "addl $4, %%eax \n\t" \
+            "pushf \n\t" \
+            "pushl %%ebx \n\t" \
+            "movl 4(%%esp), %%ebx \n\t" \
+            "movl %%ebx, (%%eax) \n\t" \
+            "popl %%ebx \n\t" \
+            "popf \n\t" \
+    ::"p" (&pcb[task_index]):"eax", "ebx"); \
+}
+
 struct tss_struct {
 	long	back_link;	/* 16 high bits zero */
 	long	esp0;
@@ -57,3 +103,4 @@ int get_empty_process();
 unsigned short get_next_pid();
 unsigned short get_pid();
 unsigned short get_task_index();
+
