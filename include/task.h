@@ -46,6 +46,45 @@
     ::"p" (&pcb[task_index]):"eax", "ebx"); \
 }
 
+#define load_task_pcb(task_index) {\
+    __asm__("movl %0, %%eax \n\t" \
+            "addl $8, %%eax \n\t" \
+            "addl $2, %%eax \n\t" \
+            "movw (%%eax), %%ds \n\t" \
+            "addl $2, %%eax \n\t" \
+            "movw (%%eax), %%es \n\t" \
+            "addl $2, %%eax \n\t" \
+            "movw (%%eax), %%fs \n\t" \
+            "addl $2, %%eax \n\t" \
+            "movw (%%eax), %%gs \n\t" \
+            "addl $2, %%eax \n\t" \
+            "movw (%%eax), %%ss \n\t" \
+            "addl $2, %%eax \n\t" \
+            "movl (%%eax), %%eax \n\t" \
+            "addl $4, %%eax \n\t" \
+            "movl (%%eax), %%ebx \n\t" \
+            "addl $4, %%eax \n\t" \
+            "movl (%%eax), %%ecx \n\t" \
+            "addl $4, %%eax \n\t" \
+            "movl (%%eax), %%edx \n\t" \
+            "addl $4, %%eax \n\t" \
+            "movl (%%eax), %%esp \n\t" \
+            "addl $4, %%eax \n\t" \
+            "movl (%%eax), %%ebp \n\t" \
+            "addl $4, %%eax \n\t" \
+            "movl (%%eax), %%esi \n\t" \
+            "addl $4, %%eax \n\t" \
+            "movl (%%eax), %%edi \n\t" \
+            "addl $4, %%eax \n\t" \
+            "addl $4, %%eax \n\t" \
+            "pushl (%%eax) \n\t" \
+            "popf \n\t" \
+            "lldt  %%bx \n\t" \
+            "outb %%cl, $0xA0 \n\t" \
+            "ljmp -48(%%eax), -4(%%eax)\n\t" \
+    ::"p" (&pcb[task_index]), "b" (task_index<<3), "b" (0x20):"eax"); \
+}
+
 struct tss_struct {
 	long	back_link;	/* 16 high bits zero */
 	long	esp0;

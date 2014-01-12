@@ -16,6 +16,7 @@ void clock_interrupt() {
 //	*video_memory = (*video_memory) + 1;
 //	__asm__("outb %%al, $0x20"::"a" (0x20));
 ////	__asm__("outb %%al, $0xA0"::"a" (0x20));
+    schedule();
 	_IRET();
 }
 

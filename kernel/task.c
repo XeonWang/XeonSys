@@ -118,5 +118,19 @@ void schedule() {
     } else {
         pcb[task_index].time_remain = TASK_TIMES;
         record_current_task_pcb();
+
+        int i;
+        for(i = task_index ; i < MAX_PROCESS ; i++) {
+            if(runable_processes[i] == NULL) {
+                load_task_pcb(index);
+                return;
+            }
+        }
+        for(i = FIRST_PROCESS_INDEX ; i < task_index ; i++) {
+            if(runable_processes[i] == NULL) {
+                load_task_pcb(index);
+                return;
+            }
+        }
     }
 }
