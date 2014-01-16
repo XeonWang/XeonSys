@@ -1,6 +1,6 @@
 #define TASK_SIZE 0x9f*4*1024
 
-#define record_current_task_pcb(task_index) {\
+#define record_current_task_to_pcb(task_index) {\
     __asm__("movl %0, %%eax \n\t" \
             "addl $8, %%eax \n\t" \
             "movw %%cs, (%%eax) \n\t" \
@@ -62,7 +62,6 @@
             "addl $2, %%eax \n\t" \
             "movl (%%eax), %%eax \n\t" \
             "addl $4, %%eax \n\t" \
-            "movl (%%eax), %%ebx \n\t" \
             "addl $4, %%eax \n\t" \
             "movl (%%eax), %%ecx \n\t" \
             "addl $4, %%eax \n\t" \
@@ -80,9 +79,12 @@
             "pushl (%%eax) \n\t" \
             "popf \n\t" \
             "lldt  %%bx \n\t" \
-            "outb %%cl, $0xA0 \n\t" \
-            "ljmp -48(%%eax), -4(%%eax)\n\t" \
-    ::"p" (&pcb[task_index]), "b" (task_index<<3), "b" (0x20):"eax"); \
+            "pushw -48(%%eax) \n\t" \
+            "pushl -4(%%eax) \n\t" \
+            "movb 0x20, %%al \n\t" \
+            "outb %%al, $0x20 \n\t" \
+            "lret \n\t" \
+    ::"p" (&pcb[task_index]), "b" (task_index<<3):"eax"); \
 }
 
 struct tss_struct {

@@ -12,7 +12,7 @@ begin:
     MOV AL, 'P'
     MOV [GS:EDI], AX
 
-    MOV CX, 0x000C
+    MOV CX, 0x000D
     MOV BX, loader_offset 
     MOV AX, 1
 read_loader:

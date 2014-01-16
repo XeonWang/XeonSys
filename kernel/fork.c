@@ -2,6 +2,7 @@
 #include <descriptor.h>
 #include <task.h>
 #include <memory.h>
+#include <const.h>
 
 extern struct global_desc gdt[];
 extern struct desc_struct ldt[];
@@ -59,7 +60,7 @@ int fork()
             "popf \n\t" \
     ::"p" (&pcb[task_index]):"eax", "ebx");
     __asm__(""::"b" (task_index));
-    system_call(SYS_CALL_FORK);
+    return system_call(SYS_CALL_FORK);
 }
 
 void copy_registers(int src_index, int target_index) {
@@ -129,4 +130,6 @@ int fork_impl()
     memory_copy(0, 0, (((empty_pcb*4+2) << 3) + 7), 0, TASK_SIZE);
 
     to_runable(&processes[empty_pcb]);
+    //father process return the sun process pid
+    __asm__(""::"a" (processes[empty_pcb].pid));
 }

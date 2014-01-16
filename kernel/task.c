@@ -13,6 +13,42 @@ struct pcb_struct processes[MAX_PROCESS];
 struct pcb_struct *runable_processes[MAX_PROCESS];
 struct pcb_struct *blocked_processes[MAX_PROCESS];
 
+struct tss_struct init_tss = {
+ 0,0xb00,0x10,0,0,0,0,0, \
+ 0,0,0,0,0,0,0,0,0,0,0x17,0x17,0x17,0x17,0x17,0x17, \
+ 0x28, 0, 0
+};
+
+void set_init_tss() {
+    init_tss.back_link = 0;
+    init_tss.esp0 = 0xb00;
+    init_tss.ss0 = 0x10;
+    init_tss.esp1 = 0;
+    init_tss.ss1 = 0;
+    init_tss.esp2 = 0;
+    init_tss.ss2 = 0;
+    init_tss.cr3 = 0;
+    init_tss.eip = 0;
+    init_tss.eflags = 0;
+    init_tss.eax = 0;
+    init_tss.ecx = 0;
+    init_tss.edx = 0;
+    init_tss.ebx = 0;
+    init_tss.esp = 0;
+    init_tss.ebp = 0;
+    init_tss.esi = 0;
+    init_tss.edi = 0;
+    init_tss.es = 0x17;
+    init_tss.cs = 0x17;
+    init_tss.ss = 0x17;
+    init_tss.ds = 0x17;
+    init_tss.fs = 0x17;
+    init_tss.gs = 0x17;
+    init_tss.ldt = 0x28;
+    init_tss.t = 0;
+    init_tss.io = 0;
+}
+
 int get_empty_process() {
     int i;
     for(i = FIRST_PROCESS_INDEX ; i < MAX_PROCESS ; i++) {
@@ -46,11 +82,7 @@ void set_global_ldt() {
 }
 
 void set_init_task() {
-	struct tss_struct init_tss = {
-     0,0xb00,0x10,0,0,0,0,0, \
-	 0,0,0,0,0,0,0,0,0,0,0x17,0x17,0x17,0x17,0x17,0x17, \
-	 0x28, 0, 0 
-	};
+    set_init_tss();
     /*
 	struct desc_struct init_ldt[4] = {
 		{0, 0}, 
@@ -106,6 +138,8 @@ void to_runable(struct pcb_struct *task) {
     for(i = FIRST_PROCESS_INDEX ; i < MAX_PROCESS ; i++) {
         if(runable_processes[i] == NULL) {
             runable_processes[i] = task;
+            //sun process fork return 0
+            task->eax = 0;
             break;
         }
     }
@@ -117,18 +151,18 @@ void schedule() {
         pcb[task_index].time_remain--;
     } else {
         pcb[task_index].time_remain = TASK_TIMES;
-        record_current_task_pcb();
+        record_current_task_to_pcb(task_index);
 
         int i;
         for(i = task_index ; i < MAX_PROCESS ; i++) {
             if(runable_processes[i] == NULL) {
-                load_task_pcb(index);
+                load_task_pcb(i);
                 return;
             }
         }
         for(i = FIRST_PROCESS_INDEX ; i < task_index ; i++) {
             if(runable_processes[i] == NULL) {
-                load_task_pcb(index);
+                load_task_pcb(i);
                 return;
             }
         }

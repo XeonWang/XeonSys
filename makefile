@@ -1,5 +1,5 @@
 image: all.bin
-	dd conv=notrunc if=all.bin of=os.img bs=512 count=14
+	dd conv=notrunc if=all.bin of=os.img bs=512 count=15
 
 boot: boot.asm
 	nasm boot.asm -o boot.bin
@@ -26,4 +26,4 @@ clean:
 	rm -f include/*~
 
 fd: all.bin
-	dd conv=notrunc if=all.bin of=/dev/fd0 bs=512 count=14
+	dd conv=notrunc if=all.bin of=/dev/fd0 bs=512 count=15

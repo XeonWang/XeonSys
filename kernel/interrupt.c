@@ -1,3 +1,5 @@
+#include <descriptor.h>
+
 #define _IRET() __asm__("leave \n\t iret")
 
 extern struct interrupt_desc idt[];
@@ -31,6 +33,7 @@ void sys_call_interrupt() {
 }
 
 void set_interrupt(int index, void (*addr)(), unsigned short seg_selector, unsigned short dpl) {
+    __asm__("movw %ax, %ax");
     idt[index].addr_0_15 = (unsigned short)addr;
     idt[index].seg_selector = seg_selector;
     idt[index].type = 0x8E00+(dpl<<13);

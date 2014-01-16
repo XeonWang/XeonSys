@@ -47,7 +47,6 @@ void test_C()
 }
 
 void main() {
-	test_C();
 	
 	set_global_seg();
 	struct desc_desc gdt_desc = {256*8-1, (unsigned long)&gdt[0]};
@@ -59,5 +58,9 @@ void main() {
 	_STI();
     change_to_user_mode();
 	
-	fork();
+    if(fork() == 0) {
+        test_C();
+    }
+
+    while(1);
 }
