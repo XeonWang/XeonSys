@@ -81,7 +81,7 @@
             "lldt  %%bx \n\t" \
             "pushw -48(%%eax) \n\t" \
             "pushl -4(%%eax) \n\t" \
-            "movb 0x20, %%al \n\t" \
+            "movb $0x20, %%al \n\t" \
             "outb %%al, $0x20 \n\t" \
             "lret \n\t" \
     ::"p" (&pcb[task_index]), "b" (task_index<<3):"eax"); \

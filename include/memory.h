@@ -5,8 +5,10 @@
     __asm__("sldt %%dx \n\t" \
             "movw $40, %%bx \n\t" \
             "lldt %%bx \n\t" \
+            "pushw %%es \n\t" \
             "movw %%ax, %%es \n\t" \
             "rep; movsb \n\t" \
+            "popw %%es \n\t" \
             "lldt %%dx \n\t" \
     :: "a" (es),"S" (source), "D" (target), "c" (length) : "bx","dx");\
 }
