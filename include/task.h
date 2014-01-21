@@ -3,7 +3,8 @@
 #define record_current_task_to_pcb(task_index) {\
     __asm__("movl %0, %%eax \n\t" \
             "addl $8, %%eax \n\t" \
-            "movw %%cs, (%%eax) \n\t" \
+            "movw 0x2C(%%esp), %%bx \n\t" \
+            "movw %%bx, (%%eax) \n\t" \
             "addl $2, %%eax \n\t" \
             "movw %%ds, (%%eax) \n\t" \
             "addl $2, %%eax \n\t" \
@@ -31,10 +32,7 @@
             "addl $4, %%eax \n\t" \
             "movl %%edi, (%%eax) \n\t" \
             "addl $4, %%eax \n\t" \
-            "jmp get_eip2 \n\t" \
-            "get_eip: movl (%%esp), %%ebx \n\t" \
-            "ret \n\t" \
-             "get_eip2: call get_eip \n\t" \
+            "movl 0x28(%%esp), %%ebx \n\t" \
             "movl %%ebx, (%%eax) \n\t" \
             "addl $4, %%eax \n\t" \
             "pushf \n\t" \
